@@ -1,37 +1,29 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.Random;
 
 public class Window extends JFrame {
-    //Panel needed
+
+    //Panel for text and random number selection tools.
     JPanel textPanel = new JPanel();
-
-
-    //For random number
     int number;
     Random random = new Random();
 
-    //to make multiple number
-    boolean typable = false;
+    //Messages that are displayed based on if user guessed right and if the user
+    private String askUserToGuess = "Guess a number from 1 - 10";
+    private String userGuessedCorrectly = "Correct! Well done";
+    private String userGuessedIncorrectly = "Incorrect! Try again";
 
     public Window(){
-
         showScreen();
-
-        //GameLoop
-
-
-
-
-
-
         this.pack();
         this.setVisible(true);
     }
 
-
+    /**
+     * This show screen method displays the Window and Start Button, panel and start button.
+     * It also allows the user to start playing the number guessing game.
+     * */
     private void showScreen(){
         textPanel.setPreferredSize(new Dimension(400, 400));
 
@@ -45,8 +37,6 @@ public class Window extends JFrame {
             number = setGuessingNumber(random);
             System.out.println(number);
         });
-
-
         this.setTitle("Number Guessing Game");
         this.setLayout(new BorderLayout());
         this.setLocationRelativeTo(null);
@@ -55,20 +45,19 @@ public class Window extends JFrame {
         this.add(textPanel);
     }
 
-
+   /**
+    * This method displays the buttons and allows the user to enter their guess
+    * */
     private void startGame(){
-        clearScreen(textPanel);
+        clearScreen();
         JPanel gamePanel = new JPanel();
         JPanel buttonPanel = new JPanel();
-
-
         buttonPanel.setLayout(new GridLayout(4, 3));
 
         //Title
-        String labelValue = "Guess number from 1-10";
         JLabel label = new JLabel();
-        label.setText(labelValue);
-
+        label.setText(askUserToGuess);
+        label.setPreferredSize(new Dimension(400, 50));
         JButton[] buttons = new JButton[10];
 
 
@@ -77,33 +66,30 @@ public class Window extends JFrame {
             buttons[i] = new JButton(String.valueOf(i));
             buttons[i].setFocusable(false);
             buttonPanel.add(buttons[i]);
-
             final int value = i;
 
             buttons[i].addActionListener((e -> {
-                if (label.getText().equals(labelValue)){
+                if (label.getText().equals(askUserToGuess) ||
+                        label.getText().equals(userGuessedIncorrectly) ||
+                        label.getText().equals(userGuessedCorrectly)||
+                        label.getText().equals("")){
                     label.setText("");
                 }
-
                 label.setText(label.getText() + String.valueOf(value));
 
             }));
         }
-
-        //Adding special buttons
-
+        //Adding buttons to clear guess and confirm it
         JButton enter = new JButton("ent");
         JButton clear = new JButton("CLR");
         setClearButton(clear, label);
-        setEnterButton(label, enter, number);
+        setEnterButton(label, enter, random);
         System.out.println(number);
 
         buttonPanel.add(enter);
         buttonPanel.add(clear);
-
-
-
         gamePanel.add(label);
+
         this.add(gamePanel, BorderLayout.NORTH);
         this.add(buttonPanel);
         this.revalidate();
@@ -111,48 +97,59 @@ public class Window extends JFrame {
 
     }
 
-
-    //To swing from start screen to game
-    private void clearScreen(JPanel panel){
+    /**
+     * This method removes panels from the frame.
+     * It's main purpose is really just to make switching between screens easier
+     * */
+    private void clearScreen(){
         this.remove(textPanel);
-
         this.revalidate();
         this.repaint();
     }
 
-    //For deciding what the random number is
-
+    /**
+     * A simple random number generator
+     * */
     private int setGuessingNumber(Random random){
-
-        random = new Random();
-        return random.nextInt(0, 10);
-
+        return random.nextInt(0, 11);
     }
 
-    //Methods to make special buttons clear and enter choice
+    /**
+     * Custom made method specifically for the clear button
+     * */
     private void setClearButton(JButton clearButton, JLabel label){
         clearButton.setFocusable(false);
-
         clearButton.addActionListener((e -> {
             label.setText("");
         }));
     }
 
-    private void setEnterButton(JLabel label, JButton button, int number){
-
+    /**
+     * Custom made button for the enter button that confirms user number
+     * This button resets the number so that the user can guess again and sets label back to
+     * 0
+     * */
+    private void setEnterButton(JLabel label, JButton button, Random random){
         button.setFocusable(false);
-
         button.addActionListener(e -> {
 
-            try {
-                if (Integer.parseInt(label.getText()) == number){
-                    System.out.println("you got it.");
-                }else {
-                    System.out.println("Incorrect");
-                }
-            } catch (NumberFormatException ex) {
-                throw new RuntimeException(ex);
+            if (label.getText().equals(askUserToGuess) ||
+                    label.getText().equals(userGuessedIncorrectly) ||
+                    label.getText().equals(userGuessedCorrectly)||
+            label.getText().equals("")){
+                label.setText("");
             }
+
+            else if (Integer.parseInt(label.getText()) == number){
+                label.setText(userGuessedCorrectly);
+                number = setGuessingNumber(random);
+                System.out.println(number);
+            }
+
+            else {
+                label.setText(userGuessedIncorrectly);
+            }
+
         });
 
     }
