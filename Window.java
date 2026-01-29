@@ -15,16 +15,13 @@ public class Window extends JFrame {
     private String userGuessedIncorrectly = "Incorrect! Try again";
 
     public Window(){
-        showScreen();
-        this.pack();
-        this.setVisible(true);
     }
 
     /**
      * This show screen method displays the Window and Start Button, panel and start button.
      * It also allows the user to start playing the number guessing game.
      * */
-    private void showScreen(){
+    void showScreen(){
         textPanel.setPreferredSize(new Dimension(400, 400));
 
         JButton startButton = new JButton("Start");
